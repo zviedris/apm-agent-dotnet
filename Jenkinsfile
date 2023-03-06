@@ -33,7 +33,7 @@ pipeline {
     booleanParam(name: 'Run_As_Main_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on main branch.')
   }
   stages {
-    stage('Initializing'){
+    stage('Initializing') {
       stages{
         stage('Checkout') {
           options { skipDefaultCheckout() }
@@ -56,7 +56,7 @@ pipeline {
             }
           }
         }
-        stage('Parallel'){
+        stage('Parallel') {
           when {
             beforeAgent true
             allOf {

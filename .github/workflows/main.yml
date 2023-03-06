@@ -1,0 +1,238 @@
+name: main
+
+on:
+  push:
+    branches:
+      - feature/github-actions
+    paths-ignore:
+      - '^docs/.*'
+
+env:
+  MSBUILDDEBUGPATH: "${{ github.workspace }}"
+
+# limit the access of the generated GITHUB_TOKEN
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # build-linux:
+  #   name: Build Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: | 
+  #           3.1.100
+  #           5.0.100
+  #           6.0.100
+  #           7.0.100
+  #     - name: Setup rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - run: '.ci/linux/build.sh'
+  #     - run: '.ci/linux/release.sh true'
+  #     - run: 'rustup default 1.67.1'
+  #     - name: Cargo make
+  #       run: cargo install --force cargo-make
+  #     - name: Build profiler
+  #       run: './build.sh profiler-zip'
+
+  # tests-linux:
+  #   name: Tests Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: | 
+  #           3.1.100
+  #           5.0.100
+  #           6.0.100
+  #           7.0.100
+  #     - name: Test & Coverage
+  #       run: '.ci/linux/test.sh'
+
+  # startup-hook-tests-linux:
+  #   name: Startup Hook Tests Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: | 
+  #           3.1.100
+  #           5.0.100
+  #           6.0.100
+  #           7.0.100
+  #     - name: Build
+  #       run: './build.sh agent-zip'
+  #     - name: Test & Coverage
+  #       run: '.ci/linux/test-startuphooks.sh'
+
+  # profiler-tests-linux:
+  #   name: Profiler Tests Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: | 
+  #           3.1.100
+  #           5.0.100
+  #           6.0.100
+  #           7.0.100
+  #     - name: Setup rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - run: 'rustup default 1.67.1'
+  #     - name: Cargo make
+  #       run: cargo install --force cargo-make
+  #     - name: Build profiler
+  #       run: './build.sh profiler-zip'
+  #     - name: Test & coverage
+  #       run: '.ci/linux/test-profiler.sh'
+
+  # docker-build-linux:
+  #   name: Docker Build Linux
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: | 
+  #           3.1.100
+  #           5.0.100
+  #           6.0.100
+  #           7.0.100
+  #     - name: Setup rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - run: 'rustup default 1.67.1'
+  #     - name: Cargo make
+  #       run: cargo install --force cargo-make
+  #     - name: Build profiler
+  #       run: './build.sh profiler-zip'
+  #     - run: '.ci/linux/build_docker.sh'
+
+  # dotnet-framework-windows:
+  #   name: Windows .NET Framework Build
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install tools
+  #       run: './.ci/windows/tools.ps1'
+  #       shell: pwsh
+  #     - name: Install msbuild tools
+  #       run: './.ci/windows/msbuild-tools.ps1'
+  #       shell: pwsh
+  #     - name: MSBuild
+  #       run: './.ci/windows/msbuild.bat'
+  #       shell: cmd
+  #     - name: Install test tools
+  #       run: './.ci/windows/test-tools.ps1'
+  #       shell: pwsh
+  #     - name: Test & Coverage
+  #       run: './.ci/windows/testnet461.bat'
+  #       shell: cmd
+  #     - name: Test IIS
+  #       run: './.ci/windows/test-iis.bat'
+  #       shell: cmd
+
+  # dotnet-core-build-windows:
+  #   name: Windows .NET Core Build
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install tools
+  #       run: './.ci/windows/tools.ps1'
+  #       shell: pwsh
+  #     - name: Add cargo to system path
+  #       run: 'echo "C:\tools\cargo" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+  #     - name: Install msbuild tools
+  #       run: './.ci/windows/msbuild-tools.ps1'
+  #       shell: pwsh
+  #     - name: Build
+  #       run: './.ci/windows/dotnet.bat'
+  #       shell: cmd
+  #     - name: Build agent
+  #       run: './build.bat agent-zip'
+  #       shell: pwsh
+  #     - name: Build profiler
+  #       run: './build.bat profiler-zip'
+  #       shell: cmd
+
+  # dotnet-core-tests-windows:
+  #   name: Windows .NET Core Tests
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install tools
+  #       run: './.ci/windows/tools.ps1'
+  #       shell: pwsh
+  #     - name: Add cargo to system path
+  #       run: 'echo "C:\tools\cargo" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+  #     - name: Install msbuild tools
+  #       run: './.ci/windows/msbuild-tools.ps1'
+  #       shell: pwsh
+  #     - name: Install test tools
+  #       run: './.ci/windows/test-tools.ps1'
+  #       shell: pwsh
+  #     - name: Test & coverage
+  #       run: './.ci/windows/test.bat'
+  #       shell: cmd
+
+  # dotnet-core-startup-hook-tests-windows:
+  #   name: Windows .NET Core Startup Hook Tests
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install tools
+  #       run: './.ci/windows/tools.ps1'
+  #       shell: pwsh
+  #     - name: Add cargo to system path
+  #       run: 'echo "C:\tools\cargo" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+  #     - name: Install msbuild tools
+  #       run: './.ci/windows/msbuild-tools.ps1'
+  #       shell: pwsh
+  #     - name: Install test tools
+  #       run: './.ci/windows/test-tools.ps1'
+  #       shell: pwsh
+  #     - name: Build
+  #       run: './build.bat agent-zip'
+  #       shell: pwsh
+  #     - name: Startup Hook Tests
+  #       run: './.ci/windows/test-startuphooks.bat'
+  #       shell: cmd
+
+  dotnet-core-profiler-tests-windows:
+    name: Windows .NET Core Profiler Tests
+    runs-on: windows-2019
+    env:
+      DOCKER_HOST: 'tcp://35.189.249.223:2375'
+      TESTCONTAINERS_HOST_OVERRIDE: '35.189.249.223'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install tools
+        run: './.ci/windows/tools.ps1'
+        shell: pwsh
+      - name: Add cargo to system path
+        run: 'echo "C:\tools\cargo" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+      - name: Install msbuild tools
+        run: './.ci/windows/msbuild-tools.ps1'
+        shell: pwsh
+      - name: Install test tools
+        run: './.ci/windows/test-tools.ps1'
+        shell: pwsh
+      - name: Build
+        run: './build.bat profiler-zip'
+        shell: cmd
+      - name: Test & Coverage
+        run: './.ci/windows/test-profiler.bat'
+        shell: cmd
